@@ -26,6 +26,8 @@ public class MainFrame extends JFrame implements Runnable {
     private JButton selectImageButton;
     private JTextField filePathTextField;
 
+    private int ol;
+
     private JButton selectDestinationButton;
     private JTextField destinationPathTextField;
 
