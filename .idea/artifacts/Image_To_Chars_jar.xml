@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Image-To-Chars:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Image_To_Chars_jar</output-path>
+    <root id="archive" name="Image-To-Chars.jar">
+      <element id="module-output" name="Image-To-Chars" />
+    </root>
+  </artifact>
+</component>
