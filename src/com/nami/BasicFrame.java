@@ -12,9 +12,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 
-public class MainFrame extends JFrame implements Runnable {
+public class BasicFrame extends JFrame implements Runnable {
 
     //Constants
     private final String VERSION = "v1.0.0";
@@ -23,24 +23,24 @@ public class MainFrame extends JFrame implements Runnable {
     private final int FONT_SIZE = 11;
 
     //GUI
-    private JButton selectImageButton;
-    private JTextField filePathTextField;
+    private JPanel panel;
 
-    private JButton selectDestinationButton;
+    private JButton imagePathSelectButton;
+    private JTextField imagePathTextField;
+
+    private JButton destinationPathSelectButton;
     private JTextField destinationPathTextField;
-
-    private JComboBox<String> fontNameComboBox;
 
     private JRadioButton widthScalingRadioButton;
     private JRadioButton heightScalingRadioButton;
     private JRadioButton noneScalingRadioButton;
 
-    private JProgressBar progressBar;
+    private JComboBox<String> fontNameComboBox;
+
+    private JProgressBar runProgressBar;
     private JButton runButton;
 
-    private JPanel panel;
-
-    public MainFrame() {
+    public BasicFrame() {
         //Setting up frame
         setTitle("Image-To-Chars " + VERSION);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -76,20 +76,20 @@ public class MainFrame extends JFrame implements Runnable {
         fontNameComboBox.setSelectedItem("Consolas");
 
         //When selecting image
-        selectImageButton.addActionListener(e -> {
+        imagePathSelectButton.addActionListener(e -> {
             int rep = imageFileChooser.showOpenDialog(null);
             if (rep != JFileChooser.APPROVE_OPTION)
                 return;
 
             File file = imageFileChooser.getSelectedFile();
-            filePathTextField.setText(file.getAbsolutePath());
+            imagePathTextField.setText(file.getAbsolutePath());
 
             if (destinationPathTextField.getText().trim().isEmpty())
                 destinationPathTextField.setText(file.getParent());
         });
 
         //When selecting Folder
-        selectDestinationButton.addActionListener(e -> {
+        destinationPathSelectButton.addActionListener(e -> {
             int rep = destinationFileChooser.showOpenDialog(null);
             if (rep != JFileChooser.APPROVE_OPTION)
                 return;
@@ -119,7 +119,7 @@ public class MainFrame extends JFrame implements Runnable {
     @Override
     public void run() {
         //Check if an image was selected
-        File imgFile = new File(filePathTextField.getText());
+        File imgFile = new File(imagePathTextField.getText());
         if (!imgFile.exists()) {
             errorWindow("Select image file");
             return;
@@ -133,7 +133,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         long startTime = System.nanoTime();
-        progressBar.setValue(0);
+        runProgressBar.setValue(0);
 
         //Loading Image
         BufferedImage rawImg;
@@ -176,7 +176,7 @@ public class MainFrame extends JFrame implements Runnable {
                 sb.append(CHARS[(int) Math.round(index)]);
 
                 double percent = (double) (x + y * imgWidth) / pixelSum * 100d;
-                progressBar.setValue((int) Math.round(percent));
+                runProgressBar.setValue((int) Math.round(percent));
             }
             sb.append("\n");
         }
@@ -206,7 +206,7 @@ public class MainFrame extends JFrame implements Runnable {
         sb.append("github: https://github.com/iNxmi\n");
 
         sb.append("\n<SETTINGS>\n");
-        sb.append(String.format("filePathTextField: %s\n", filePathTextField.getText()));
+        sb.append(String.format("filePathTextField: %s\n", imagePathTextField.getText()));
         sb.append(String.format("destinationPathTextField: %s\n", destinationPathTextField.getText()));
         sb.append(String.format("fontNameComboBox: %s\n", fontNameComboBox.getSelectedItem()));
         sb.append(String.format("widthScalingRadioButton: %s\n", widthScalingRadioButton.isSelected()));
@@ -244,10 +244,11 @@ public class MainFrame extends JFrame implements Runnable {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            new MainFrame();
+            new BasicFrame();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 }
+
