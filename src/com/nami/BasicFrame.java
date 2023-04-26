@@ -204,6 +204,7 @@ public class BasicFrame extends JFrame implements Runnable {
         sb.append("instagram: @memphis_pc\n");
         sb.append("discord: Memphis#3543\n");
         sb.append("github: https://github.com/iNxmi\n");
+        sb.append("website: https://nami.mhergh.com\n");
 
         sb.append("\n<SETTINGS>\n");
         sb.append(String.format("filePathTextField: %s\n", imagePathTextField.getText()));

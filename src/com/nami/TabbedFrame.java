@@ -15,10 +15,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class TabbedFrame extends JFrame implements Runnable {
-
-    //Constants
-    private final char[] CHARS = {'@', '&', '#', '*', '!', '=', ';', ':', '~', '-', ',', '.', ' '};
-
     //Window
     private JPanel panel;
 
@@ -34,11 +30,15 @@ public class TabbedFrame extends JFrame implements Runnable {
     private JRadioButton scalingNoneRadioButton;
     private JComboBox<String> scalingFontsComboBox;
 
+    //Charset
+    private JComboBox<String> charsetComboBox;
+
     //Processing Tab
     private JProgressBar processingProgressBar;
     private JButton processingRunButton;
 
     //Utilities
+    private HashMap<String, char[]> charsets;
     private JFileChooser imageFileChooser, destinationFileChooser;
 
     public TabbedFrame() {
@@ -47,6 +47,7 @@ public class TabbedFrame extends JFrame implements Runnable {
 
         initFileTab();
         initScalingTab();
+        initCharsetTab();
         initProcessingTab();
 
         setVisible(true);
@@ -62,6 +63,11 @@ public class TabbedFrame extends JFrame implements Runnable {
     }
 
     private void initUtilities() {
+        //Converting ASCII grey scale
+        charsets = new HashMap<>();
+        charsets.put("symbols", toArray("@&#*!=;:~-,. "));
+        charsets.put("all", toArray("$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "));
+
         //Image file chooser
         imageFileChooser = new JFileChooser();
         imageFileChooser.setDialogTitle("Select Image");
@@ -119,11 +125,22 @@ public class TabbedFrame extends JFrame implements Runnable {
         scalingFontsComboBox.setSelectedItem("Consolas");
     }
 
+    private void initCharsetTab() {
+        charsets.forEach((k, v) -> charsetComboBox.addItem(k));
+        charsetComboBox.setSelectedItem("symbols");
+    }
+
     private void initProcessingTab() {
         processingProgressBar.setString("");
         processingProgressBar.setStringPainted(true);
 
         processingRunButton.addActionListener(e -> new Thread(this).start());
+    }
+
+    private char[] toArray(String str) {
+        char[] chars = new char[str.length()];
+        str.getChars(0, str.length(), chars, 0);
+        return chars;
     }
 
     @Override
@@ -182,8 +199,9 @@ public class TabbedFrame extends JFrame implements Runnable {
                 Color color = new Color(img.getRGB(x, y));
                 double brightness = ((0.21d * color.getRed()) + (0.72d * color.getGreen())
                         + (0.07d * color.getBlue()));
-                double index = brightness / 255 * (CHARS.length - 1);
-                char chr = CHARS[(int) Math.round(index)];
+                char[] charset = charsets.get((String) charsetComboBox.getSelectedItem());
+                double index = brightness / 255 * (charset.length - 1);
+                char chr = charset[(int) Math.round(index)];
                 sb.append(chr);
 
                 double percent = (double) (x + y * imgWidth) / pixelSum * 100d;
